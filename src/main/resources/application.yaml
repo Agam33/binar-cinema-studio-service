@@ -1,0 +1,23 @@
+app:
+  jwt:
+    key: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
+
+server:
+  port: 8084
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bioskop_db
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+service:
+  client:
+    filmService:
+      url: http://localhost:8082
+    authService:
+      url: http://localhost:8080
