@@ -11,15 +11,12 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScheduleDTO {
-    private String filmName;
+    private String filmTitle;
     private String studioName;
     private LocalTime startTime;
     private LocalTime endTime;
-    private LocalDate date;
+    private LocalDate showAt;
     private BigDecimal price;
-    private String filmTitle;
-    private String rating;
 }

@@ -11,10 +11,12 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.ra.bioskop.repository.query.ScheduleQuery.SCHEDULE_DETAIL_BY_DATE;
+
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
-    @Query("SELECT '*' FROM Schedule s WHERE s.showAt = :showAt")
+    @Query(value = SCHEDULE_DETAIL_BY_DATE)
     List<ScheduleDTO> findByShowAt(@Param("showAt") LocalDate showAt);
 
 }

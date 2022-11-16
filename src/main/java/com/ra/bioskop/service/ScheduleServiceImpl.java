@@ -9,7 +9,10 @@ import com.ra.bioskop.model.schedule.Schedule;
 import com.ra.bioskop.model.studio.Studio;
 import com.ra.bioskop.repository.ScheduleRepository;
 import com.ra.bioskop.repository.StudioRepository;
+import com.ra.bioskop.security.AuthEntryPoint;
 import com.ra.bioskop.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,55 +29,46 @@ import static com.ra.bioskop.exception.BioskopException.throwException;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-    @Value("#${service.client.filmService.url}")
-    private String baseFilmClient;
-
     private ScheduleRepository scheduleRepository;
 
     private StudioRepository studioRepository;
 
-    private final WebClient webClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthEntryPoint.class);
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, StudioRepository studioRepository, WebClient webClient) {
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, StudioRepository studioRepository) {
         this.scheduleRepository = scheduleRepository;
         this.studioRepository = studioRepository;
-        this.webClient = webClient;
     }
 
     @Override
-    public boolean addSchedule(ScheduleRequest request) {
-        Optional<FilmDTO> filmDTO = Optional.ofNullable(webClient
-                .get()
-                .uri(baseFilmClient + "/api/v1/films/" + request.getFilmCode())
-                .retrieve().bodyToMono(FilmDTO.class).block());
-
+    public boolean addSchedule(ScheduleRequest request, FilmDTO filmDTO) {
         Optional<Studio> studio= studioRepository.findById(request.getStudioId());
 
-        if(filmDTO.isEmpty() || studio.isEmpty())
-            throw throwException(ExceptionType.NOT_FOUND, HttpStatus.NO_CONTENT, Constants.NOT_FOUND_MSG);
+        if(studio.isEmpty())
+            throw throwException(ExceptionType.NOT_FOUND, HttpStatus.NOT_FOUND, Constants.NOT_FOUND_MSG);
 
-
-        FilmDTO filmModel = filmDTO.get();
         Studio studioModel = studio.get();
         Schedule scheduleModel = new Schedule();
+
+        LOGGER.info("Film Code : "+filmDTO.getFilmCode());
+        LOGGER.info("Film Title : "+filmDTO.getTitle());
+        LOGGER.info("Film Overview : "+filmDTO.getOverview());
 
         LocalTime startTime = LocalTime.parse(request.getStartTime());
         LocalDate showAt = LocalDate.parse( request.getShowAt());
         LocalTime endTime = LocalTime.parse(request.getEndTime());
 
-        scheduleModel.setId(getScheduleId(request.getFilmCode(), startTime, showAt));
+        scheduleModel.setId(getScheduleId(request.getFilmId(), startTime, showAt));
         scheduleModel.setPrice(request.getPrice());
-        scheduleModel.setFilmId(filmModel.getFilmCode());
-        scheduleModel.setFilmTitle(filmModel.getTitle());
+        scheduleModel.setFilmId(filmDTO.getFilmCode());
+        scheduleModel.setFilmTitle(filmDTO.getTitle());
         scheduleModel.setCreatedAt(LocalDateTime.now());
         scheduleModel.setUpdatedAt(LocalDateTime.now());
         scheduleModel.setShowAt(showAt);
         scheduleModel.setStartTime(startTime);
         scheduleModel.setEndTime(endTime);
         scheduleModel.setStudio(studioModel);
-
         scheduleRepository.save(scheduleModel);
-
         return true;
     }
 

@@ -1,8 +1,11 @@
 package com.ra.bioskop.security.filters;
 
 import com.ra.bioskop.dto.response.ValidateTokenResponse;
+import com.ra.bioskop.security.AuthEntryPoint;
 import com.ra.bioskop.util.Constants;
 import com.ra.bioskop.util.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +33,6 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     private String authClient;
 
     private final WebClient webClient;
-
 
     public AuthenticationJwtFilter(JwtUtil jwtUtil, WebClient webClient) {
         this.jwtUtil = jwtUtil;
@@ -81,9 +83,11 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        request.setAttribute("validToken", token);
     }
 
-    private String getToken(HttpServletRequest request) {
+    public String getToken(HttpServletRequest request) {
         String header = request.getHeader(Constants.HEADER);
         return header.split(" ")[1].trim();
     }

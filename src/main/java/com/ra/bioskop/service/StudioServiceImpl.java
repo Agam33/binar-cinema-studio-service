@@ -21,7 +21,6 @@ public class StudioServiceImpl implements StudioService {
         this.studioRepository = studioRepository;
     }
 
-
     @Override
     public void addStudios(List<StudioDTO> studioDTOList) {
         List<Studio> studios = studioDTOList.stream().map(StudioMapper::dtoToEntity)
