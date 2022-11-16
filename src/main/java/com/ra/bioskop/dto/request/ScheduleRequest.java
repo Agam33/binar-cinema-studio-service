@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ScheduleRequest {
     @NotNull
-    private String filmCode;
+    private String filmId;
 
     @NotNull
     private Integer studioId;
