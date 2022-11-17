@@ -6,6 +6,8 @@ server:
   port: 8084
 
 spring:
+  application:
+    name: notification-service
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,3 +23,10 @@ service:
       url: http://localhost:8082
     authService:
       url: http://localhost:8080
+
+eureka:
+  instance:
+    hostname: binar-cinema-discovery.up.railway.app
+  client:
+    serviceUrl:
+      defaultZone: https://${eureka.instance.hostname}/eureka
