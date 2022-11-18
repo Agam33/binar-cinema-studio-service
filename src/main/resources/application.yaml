@@ -3,7 +3,7 @@ app:
     key: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
 
 server:
-  port: 8084
+  port: 8095
 
 spring:
   application:
@@ -12,21 +12,19 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:postgresql://localhost:5432/bioskop_db
+    url: jdbc:postgresql://containers-us-west-68.railway.app:6368/railway
     username: postgres
-    password: password
+    password: xhtTI10rPJkQvUXUpfVz
     driver-class-name: org.postgresql.Driver
 
 service:
   client:
     filmService:
       url: http://localhost:8082
-    authService:
-      url: http://localhost:8080
 
-eureka:
-  instance:
-    hostname: binar-cinema-discovery.up.railway.app
-  client:
-    serviceUrl:
-      defaultZone: https://${eureka.instance.hostname}/eureka
+#eureka:
+#  instance:
+#    hostname: binar-cinema-discovery.up.railway.app
+#  client:
+#    serviceUrl:
+#      defaultZone: https://${eureka.instance.hostname}/eureka

@@ -1,12 +1,7 @@
 package com.ra.bioskop.security.filters;
 
-import com.ra.bioskop.dto.response.ValidateTokenResponse;
-import com.ra.bioskop.security.AuthEntryPoint;
 import com.ra.bioskop.util.Constants;
 import com.ra.bioskop.util.JwtUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +9,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,14 +23,8 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    @Value("${service.client.authService.url}")
-    private String authClient;
-
-    private final WebClient webClient;
-
-    public AuthenticationJwtFilter(JwtUtil jwtUtil, WebClient webClient) {
+    public AuthenticationJwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.webClient = webClient;
     }
 
     @Override
@@ -62,16 +50,10 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(String token, HttpServletRequest request) {
-        ValidateTokenResponse response = webClient.get().uri(authClient + "/api/auth/validateToken")
-                .header(Constants.HEADER, Constants.TOKEN_PREFIX + token)
-                .retrieve()
-                .bodyToMono(ValidateTokenResponse.class).block();
-
-        if(response == null) return;
 
         String email = jwtUtil.getUserNameFromJwtToken(token);
 
-        String[] authorities = { response.getAuthority() };
+        String[] authorities = { request.getHeader("authority") };
 
         List<SimpleGrantedAuthority> simpleAuthorities = new ArrayList<>();
         simpleAuthorities.add(new SimpleGrantedAuthority(authorities[0]));
