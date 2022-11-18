@@ -20,7 +20,7 @@ spring:
 service:
   client:
     filmService:
-      url: http://localhost:8082
+      url: https://binar-cinema-film-service.up.railway.app/
 
 #eureka:
 #  instance:
